@@ -18,20 +18,4 @@ const userSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-// THE FIX: Simplified hook
-userSchema.pre('save', async function () {
-    // If password isn't new or changed, stop here
-    if (!this.isModified('password')) return;
-
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-
-    console.log("🛠️  HOOK RUNNING: Password has been hashed!");
-});
-
-userSchema.methods.matchPassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
-};
-
 module.exports = mongoose.model('User', userSchema);

@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs'); // Added bcrypt import
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -19,9 +20,17 @@ exports.registerUser = async (userData) => {
         throw new Error('User already exists');
     }
 
-    const user = await User.create({ fullname, email, password });
-    const token = generateToken(user._id);
+    // --- LOGIC MOVED HERE ---
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    const user = await User.create({
+        fullname,
+        email,
+        password: hashedPassword // Save the hashed version
+    });
+
+    const token = generateToken(user._id);
     return { user, token };
 };
 
@@ -32,17 +41,23 @@ exports.loginUser = async (loginData) => {
         throw new Error('Please provide email and password');
     }
 
+    // Select password because 'select: false' is in the schema
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
         throw new Error('Invalid credentials');
     }
 
-    const isMatch = await user.matchPassword(password);
+    // --- LOGIC MOVED HERE ---
+    // Instead of user.matchPassword, we use bcrypt directly
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
         throw new Error('Invalid credentials');
     }
 
     const token = generateToken(user._id);
+
+    // Remove password from the user object before returning to controller
+    user.password = undefined;
 
     return { user, token };
 };
