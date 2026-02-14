@@ -2,8 +2,22 @@
 
 Job Application Tracker
 
-# to start the application make sure you set up the env file for db connection, jwt
+# to start the application
 
-# npm i
+make sure you setup env file with names or variables:
+PORT
+MONGO_URI
+JWT_SECRET
+JWT_EXPIRE
 
-# happy testing
+npm install to install all the dependencies
+
+after install
+
+command: npm run dev
+
+then you can continue testing the endpoints
+
+# database part:
+
+its placed in a picture and shows how the relation ships its between them
