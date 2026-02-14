@@ -21,3 +21,4 @@ then you can continue testing the endpoints
 # database part:
 
 its placed in a picture and shows how the relation ships its between them
+https://github.com/enis-n/Job-Application-Tracker/blob/main/Job%20Application%20Tracker.png
